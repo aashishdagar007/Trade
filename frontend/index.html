@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="TradePro - Professional Algorithmic Trading Platform"
+    />
+    <title>TradePro</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lightweight-charts@4.0.0/dist/lightweight-charts.standalone.production.js"></script>
+    <style>
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+          'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+          sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        background-color: #131722;
+        color: #d1d4dc;
+        height: 100vh;
+        overflow: hidden;
+      }
+      #root {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 20px;
+        background-color: #1e222d;
+        border-bottom: 1px solid #2a2e39;
+      }
+      .symbol-selector {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .symbol-selector select {
+        background-color: #2a2e39;
+        color: #d1d4dc;
+        border: 1px solid #3a3f4b;
+        border-radius: 4px;
+        padding: 5px 10px;
+      }
+      .main-content {
+        flex: 1;
+        display: flex;
+        overflow: hidden;
+      }
+      .chart-container {
+        flex: 3;
+        position: relative;
+      }
+      .sidebar {
+        width: 280px;
+        background-color: #1e222d;
+        border-left: 1px solid #2a2e39;
+        display: flex;
+        flex-direction: column;
+        padding: 15px;
+        gap: 15px;
+        overflow-y: auto;
+      }
+      .panel {
+        background-color: #2a2e39;
+        border: 1px solid #3a3f4b;
+        border-radius: 6px;
+        padding: 15px;
+      }
+      .panel h3 {
+        margin-top: 0;
+        color: #ffffff;
+        font-size: 1.1rem;
+      }
+      .input-group {
+        margin-bottom: 12px;
+      }
+      .input-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-size: 0.9rem;
+        color: #a0a4a8;
+      }
+      .input-group input,
+      .input-group select {
+        width: 100%;
+        padding: 8px;
+        background-color: #131722;
+        border: 1px solid #3a3f4b;
+        border-radius: 4px;
+        color: #d1d4dc;
+        font-size: 0.9rem;
+      }
+      .button-group {
+        display: flex;
+        gap: 10px;
+      }
+      .button-group button {
+        flex: 1;
+        padding: 10px;
+        background-color: #2962ff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.9rem;
+      }
+      .button-group button:hover {
+        background-color: #3970ff;
+      }
+      .button-group button.danger {
+        background-color: #ff5252;
+      }
+      .button-group button.danger:hover {
+        background-color: #ff6b6b;
+      }
+      .status-indicator {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.9rem;
+      }
+      .status-indicator .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        display: inline-block;
+      }
+      .status-indicator .dot.connected {
+        background-color: #00c853;
+      }
+      .status-indicator .dot.disconnected {
+        background-color: #ff5252;
+      }
+      .price-chart {
+        width: 100%;
+        height: 200px;
+        display: block;
+      }
+      .order-form {
+        margin-top: 20px;
+      }
+      .order-form h2 {
+        margin-top: 0;
+      }
+      .form-group {
+        margin-bottom: 15px;
+      }
+      .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-size: 0.9rem;
+        color: #a0a4a8;
+      }
+      .form-group input,
+      .form-group select {
+        width: 100%;
+        padding: 8px;
+        background-color: #131722;
+        border: 1px solid #3a3f4b;
+        border-radius: 4px;
+        color: #d1d4dc;
+        font-size: 0.9rem;
+      }
+      .place-order-btn {
+        width: 100%;
+        padding: 12px;
+        background-color: #2962ff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: bold;
+      }
+      .place-order-btn:hover {
+        background-color: #3970ff;
+      }
+      .app-footer {
+        text-align: center;
+        padding: 10px;
+        font-size: 0.8rem;
+        color: #a0a4a8;
+        border-top: 1px solid #2a2e39;
+      }
+    </style>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <script type="text/babel">
+      const { useState, useEffect, useRef } = React;
+
+      function App() {
+        const [marketData, setMarketData] = useState({});
+        const [accountData, setAccountData] = useState({});
+        const [priceHistory, setPriceHistory] = useState([]);
+        const [orderForm, setOrderForm] = useState({
+          symbol: 'BTCUSDT',
+          side: 'BUY',
+          type: 'LIMIT',
+          quantity: '',
+          price: ''
+        });
+        const [orderStatus, setOrderStatus] = useState('');
+        const [wsStatus, setWsStatus] = useState('disconnected');
+        const chartRef = useRef(null);
+        const chartInstance = useRef(null);
+        const candleSeries = useRef(null);
+
+        // Fetch account data on load
+        useEffect(() => {
+          fetchAccountData();
+          // Fetch price history for chart (last 50 klines)
+          fetchPriceHistory();
+        }, []);
+
+        // WebSocket connection for real-time updates
+        useEffect(() => {
+          const ws = new WebSocket(`ws://localhost:8000/ws/market-data/${orderForm.symbol.toLowerCase()}`);
+
+          ws.onopen = () => {
+            setWsStatus('connected');
+          };
+
+          ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            if (data.type === 'market_data') {
+              setMarketData(data.data);
+              // Update price history for chart
+              setPriceHistory(prev => {
+                const newHistory = [...prev, { time: Date.now(), price: parseFloat(data.data.c) }];
+                // Keep only last 50 points
+                return newHistory.slice(-50);
+              });
+              // Update chart with new data
+              if (chartInstance.current && candleSeries.current) {
+                candleSeries.current.update({
+                  time: Date.now() / 1000, // Convert to seconds for Lightweight Charts
+                  value: parseFloat(data.data.c)
+                });
+              }
+            }
+          };
+
+          ws.onerror = (error) => {
+            console.error('WebSocket error:', error);
+            setWsStatus('disconnected');
+          };
+
+          ws.onclose = () => {
+            setWsStatus('disconnected');
+          };
+
+          return () => {
+            ws.close();
+          };
+        }, [orderForm.symbol]);
+
+        const fetchAccountData = async () => {
+          try {
+            const response = await fetch('/api/account');
+            const data = await response.json();
+            setAccountData(data);
+          } catch (error) {
+            console.error('Error fetching account data:', error);
+          }
+        };
+
+        const fetchPriceHistory = async () => {
+          try {
+            const response = await fetch(`/api/klines?symbol=${orderForm.symbol}&interval=1m&limit=50`);
+            const data = await response.json();
+            // Format data for chart: [{ time: timestamp, value: price }]
+            const formatted = data.map(k => ({
+              time: new Date(k[0]).getTime(),
+              value: parseFloat(k[4]) // close price
+            }));
+            setPriceHistory(formatted);
+            // Initialize chart with historical data
+            if (chartRef.current) {
+              initChart(formatted);
+            }
+          } catch (error) {
+            console.error('Error fetching price history:', error);
+          }
+        };
+
+        const initChart = (historicalData) => {
+          if (!chartRef.current) return;
+          
+          chartInstance.current = LightweightCharts.createChart(chartRef.current, {
+            width: 800,
+            height: 400,
+            layout: {
+              background: { color: '#131722' },
+              textColor: '#d1d4dc'
+            },
+            grid: {
+              vertLines: { color: '#1f2833' },
+              horLines: { color: '#1f2833' }
+            },
+            timeScale: {
+              borderColor: 'rgba(197, 203, 206, 0.8)'
+            }
+          });
+
+          candleSeries.current = chartInstance.current.addCandlestickSeries();
+          
+          // Convert historical data to format expected by Lightweight Charts
+          const chartData = historicalData.map(d => ({
+            time: d.time / 1000, // Convert to seconds
+            open: d.value, // Simplified - in real app we'd need OHLC
+            high: d.value,
+            low: d.value,
+            close: d.value
+          }));
+          
+          candleSeries.current.setData(chartData);
+        };
+
+        const handleSubmit = async (e) => {
+          e.preventDefault();
+          setOrderStatus('Placing order...');
+          try {
+            const response = await fetch('/api/order', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                symbol: orderForm.symbol,
+                side: orderForm.side,
+                quantity: parseFloat(orderForm.quantity),
+                type: orderForm.type,
+                price: orderForm.type === 'LIMIT' ? parseFloat(orderForm.price) : undefined
+              })
+            });
+            const result = await response.json();
+            if (result.error) {
+              setOrderStatus(`Error: ${result.error}`);
+            } else {
+              setOrderStatus('Order placed successfully!');
+              // Refresh account data after order
+              setTimeout(fetchAccountData, 1000);
+            }
+          } catch (error) {
+            setOrderStatus(`Error: ${error.message}`);
+          }
+        };
+
+        return (
+          <div className="app">
+            <header className="app-header">
+              <h1>TradePro</h1>
+              <div className="status-bar">
+                <span className="status-indicator">
+                  <div className={`dot ${wsStatus === 'connected' ? 'connected' : 'discontinued'}`}></div>
+                  <span>WebSocket: {wsStatus}</span>
+                </span>
+                {orderStatus && <span className="order-status">{orderStatus}</span>}
+              </div>
+            </header>
+
+            <main className="app-main">
+              <div className="left-panel">
+                <div className="market-data">
+                  <h2>{marketData.symbol || 'BTCUSDT'}</h2>
+                  <div className="price">
+                    ${marketData.c ? parseFloat(marketData.c).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 8 }) : '--'}
+                  </div>
+                  <div className="change">
+                    {marketData.P ? 
+                      `${parseFloat(marketData.P) > 0 ? '+' : ''}${parseFloat(marketData.P).toFixed(2)}%` : '--'
+                    }
+                  </div>
+                </div>
+
+                <div className="chart-container">
+                  <h3>Price Chart (1m)</h3>
+                  <div ref={chartRef} className="price-chart"></div>
+                </div>
+              </div>
+
+              <div className="right-panel">
+                <div className="account-info">
+                  <h2>Account Balance</h2>
+                  {Object.keys(accountData).length > 0 ? (
+                    <ul className="balances">
+                      {accountData.balances.map((balance, index) => (
+                        <li key={index}>
+                          {balance.asset}: {parseFloat(balance.free).toFixed(8)} 
+                          {balance.locked && parseFloat(balance.locked) > 0 && ` (${parseFloat(balance.locked).toFixed(8)} locked)`}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p>Loading account data...</p>
+                  )}
+                </div>
+
+                <div className="order-form">
+                  <h2>New Order</h2>
+                  <form onSubmit={handleSubmit}>
+                    <div className="form-group">
+                      <label>Symbol:</label>
+                      <select 
+                        value={orderForm.symbol}
+                        onChange={(e) => {
+                          setOrderForm({...orderForm, symbol: e.target.value});
+                          // Reset price history when symbol changes
+                          setPriceHistory([]);
+                          // Note: In a real app, you'd also restart the WS connection here
+                        }}
+                      >
+                        <option value="BTCUSDT">BTC/USDT</option>
+                        <option value="ETHUSDT">ETH/USDT</option>
+                        <option value="BNBUSDT">BNB/USDT</option>
+                        <option value="ADAUSDT">ADA/USDT</option>
+                        <option value="XRPUSDT">XRP/USDT</option>
+                      </select>
+                    </div>
+
+                    <div className="form-group">
+                      <label>Side:</label>
+                      <select 
+                        value={orderForm.side}
+                        onChange={(e) => setOrderForm({...orderForm, side: e.target.value})}
+                      >
+                        <option value="BUY">BUY</option>
+                        <option value="SELL">SELL</option>
+                      </select>
+                    </div>
+
+                    <div className="form-group">
+                      <label>Type:</label>
+                      <select 
+                        value={orderForm.type}
+                        onChange={(e) => {
+                          setOrderForm({...orderForm, type: e.target.value});
+                          // If market order, clear price field
+                          if (e.target.value === 'MARKET') {
+                            setOrderForm({...orderForm, price: ''});
+                          }
+                        }}
+                      >
+                        <option value="LIMIT">LIMIT</option>
+                        <option value="MARKET">MARKET</option>
+                      </select>
+                    </div>
+
+                    <div className="form-group">
+                      <label>Quantity:</label>
+                      <input
+                        type="number"
+                        step="0.00000001"
+                        value={orderForm.quantity}
+                        onChange={(e) => setOrderForm({...orderForm, quantity: e.target.value})}
+                        placeholder="e.g., 0.001"
+                        required
+                      />
+                    </div>
+
+                    {orderForm.type === 'LIMIT' && (
+                      <div className="form-group">
+                        <label>Price:</label>
+                        <input
+                          type="number"
+                          step="0.00000001"
+                          value={orderForm.price}
+                          onChange={(e) => setOrderForm({...orderForm, price: e.target.value})}
+                          placeholder="e.g., 25000.00"
+                          required
+                        />
+                      </div>
+                    )}
+
+                    <button type="submit" className="place-order-btn">
+                      Place Order
+                    </button>
+                  </form>
+                </div>
+
+                <div className="panel">
+                  <h3>Deploy Strategy</h3>
+                  <div className="input-group">
+                    <label>Strategy:</label>
+                    <select id="strategy-select">
+                      <option value="EMACrossover">EMA Crossover</option>
+                    </select>
+                  </div>
+                  <div className="input-group">
+                    <label>Quantity (e.g., 0.001):</label>
+                    <input type="number" id="strategy-quantity" min="0.001" step="0.001" value="0.001" />
+                  </div>
+                  <div className="button-group">
+                    <button type="button" id="deploy-strategy">Deploy Strategy</button>
+                  </div>
+                </div>
+              </div>
+            </main>
+
+            <div className="app-footer">
+              <p>TradePro - Professional Trading Platform</p>
+              <p>Data provided by Binance</p>
+            </div>
+          </div>
+        );
+      }
+
+      const root = ReactDOM.createRoot(document.getElementById('root'));
+      root.render(<App />);
+    </script>
+  </body>
+</html>
