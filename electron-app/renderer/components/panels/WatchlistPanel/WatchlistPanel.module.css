@@ -1,0 +1,87 @@
+/* WatchlistPanel.module.css */
+
+.root {
+  height:     100%;
+  overflow-y: auto;
+  background: #0d0e14;
+}
+
+.table {
+  width:           100%;
+  border-collapse: collapse;
+  font-family:     "JetBrains Mono", monospace;
+  font-size:       11px;
+}
+
+.table thead tr {
+  background:   #080910;
+  border-bottom: 2px solid #1e2030;
+  position:     sticky;
+  top:          0;
+  z-index:      1;
+}
+
+.table th {
+  padding:     6px 10px;
+  color:       #3d4060;
+  font-weight: 600;
+  font-size:   10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.right { text-align: right; }
+
+.row {
+  border-bottom: 1px solid #12131c;
+  cursor:        pointer;
+  transition:    background 0.12s;
+}
+
+.row:hover    { background: #12131c; }
+.row:focus    { outline: 1px solid #f59e0b44; }
+
+/* Micro-animation: flash row background on price update */
+@keyframes flashTick {
+  0%   { background: #f59e0b11; }
+  100% { background: transparent; }
+}
+.flash { animation: flashTick 0.4s ease-out; }
+
+.row td { padding: 7px 10px; }
+
+.sym {
+  font-weight: 600;
+  color:       #e8eaf0;
+  font-size:   12px;
+}
+
+.badge {
+  margin-left:  6px;
+  font-size:    9px;
+  font-weight:  700;
+  padding:      1px 5px;
+  border-radius: 2px;
+  vertical-align: middle;
+}
+
+.crypto { background: #7c3aed22; color: #a78bfa; }
+.equity { background: #0ea5e922; color: #38bdf8; }
+
+.price {
+  color:       #e8eaf0;
+  font-size:   12px;
+  font-weight: 600;
+}
+
+.pct {
+  font-size:   11px;
+  font-weight: 600;
+  padding:     1px 5px;
+  border-radius: 2px;
+}
+
+.pos { color: #10b981; background: #10b98115; }
+.neg { color: #ef4444; background: #ef444415; }
+
+.vol { color: #6b7280; font-size: 10px; }

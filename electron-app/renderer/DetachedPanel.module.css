@@ -1,0 +1,71 @@
+/* electron-app/renderer/DetachedPanel.module.css */
+
+.root {
+  display:        flex;
+  flex-direction: column;
+  height:         100vh;
+  background:     #0a0b0f;
+  overflow:       hidden;
+}
+
+.titleBar {
+  display:       flex;
+  align-items:   center;
+  gap:           10px;
+  padding:       6px 12px;
+  background:    #080910;
+  border-bottom: 1px solid #1e2030;
+  flex-shrink:   0;
+  height:        32px;
+  /* Electron draggable region for the mini title bar */
+  -webkit-app-region: drag;
+}
+
+.panelLabel {
+  font-family:   "JetBrains Mono", monospace;
+  font-size:     10px;
+  font-weight:   700;
+  color:         #f59e0b;
+  letter-spacing: 0.1em;
+  -webkit-app-region: no-drag;
+}
+
+.panelTitle {
+  font-size:   11px;
+  color:       #6b7280;
+  flex:        1;
+}
+
+.symbolBadge {
+  font-family:  "JetBrains Mono", monospace;
+  font-size:    10px;
+  font-weight:  600;
+  color:        #e8eaf0;
+  background:   #1e2030;
+  padding:      2px 8px;
+  border-radius: 3px;
+  -webkit-app-region: no-drag;
+}
+
+.body {
+  flex:     1;
+  overflow: hidden;
+}
+
+.error {
+  display:         flex;
+  flex-direction:  column;
+  align-items:     center;
+  justify-content: center;
+  height:          100vh;
+  background:      #0a0b0f;
+  color:           #ef4444;
+  font-family:     "JetBrains Mono", monospace;
+  font-size:       13px;
+  gap:             12px;
+}
+
+.error code {
+  color:       #6b7280;
+  font-size:   11px;
+}

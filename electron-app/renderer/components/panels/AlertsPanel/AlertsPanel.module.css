@@ -1,0 +1,298 @@
+/* electron-app/renderer/components/panels/AlertsPanel/AlertsPanel.module.css */
+
+.root {
+  display:        flex;
+  flex-direction: column;
+  height:         100%;
+  background:     #0d0e14;
+  overflow:       hidden;
+}
+
+/* ── Tabs ─────────────────────────────────────────────────────────────────── */
+
+.tabs {
+  display:        flex;
+  border-bottom:  1px solid #1e2030;
+  flex-shrink:    0;
+}
+
+.tab {
+  flex:          1;
+  background:    transparent;
+  border:        none;
+  color:         #6b7280;
+  font-family:   "JetBrains Mono", monospace;
+  font-size:     10px;
+  font-weight:   600;
+  padding:       8px 4px;
+  cursor:        pointer;
+  letter-spacing: 0.04em;
+  border-bottom: 2px solid transparent;
+  transition:    color 0.15s, border-color 0.15s;
+}
+
+.tab:hover    { color: #9ca3c0; }
+.tabActive    { color: #f59e0b; border-bottom-color: #f59e0b; }
+
+/* ── Form ─────────────────────────────────────────────────────────────────── */
+
+.form {
+  padding:       10px 10px 6px;
+  border-bottom: 1px solid #1e2030;
+  flex-shrink:   0;
+  display:       flex;
+  flex-direction: column;
+  gap:           6px;
+}
+
+.formRow {
+  display:    flex;
+  gap:        6px;
+  align-items: center;
+}
+
+.input {
+  flex:          1;
+  background:    #101118;
+  border:        1px solid #1e2030;
+  border-radius: 4px;
+  color:         #e8eaf0;
+  font-family:   "JetBrains Mono", monospace;
+  font-size:     11px;
+  padding:       5px 8px;
+  outline:       none;
+  transition:    border-color 0.15s;
+}
+
+.input:focus      { border-color: #f59e0b66; }
+.inputNarrow      { flex: 0 0 90px; }
+
+.select {
+  background:    #101118;
+  border:        1px solid #1e2030;
+  border-radius: 4px;
+  color:         #e8eaf0;
+  font-family:   "JetBrains Mono", monospace;
+  font-size:     11px;
+  padding:       5px 6px;
+  outline:       none;
+  cursor:        pointer;
+  flex:          0 0 130px;
+}
+
+.checkLabel {
+  display:     flex;
+  align-items: center;
+  gap:         6px;
+  font-size:   11px;
+  color:       #6b7280;
+  cursor:      pointer;
+  user-select: none;
+}
+
+.checkLabel input { accent-color: #f59e0b; cursor: pointer; }
+
+.formError {
+  font-family: "JetBrains Mono", monospace;
+  font-size:   10px;
+  color:       #ef4444;
+  flex:        1;
+}
+
+.addBtn {
+  display:       flex;
+  align-items:   center;
+  gap:           5px;
+  background:    #f59e0b22;
+  border:        1px solid #f59e0b44;
+  border-radius: 4px;
+  color:         #f59e0b;
+  font-family:   "JetBrains Mono", monospace;
+  font-size:     10px;
+  font-weight:   700;
+  padding:       5px 12px;
+  cursor:        pointer;
+  letter-spacing: 0.04em;
+  transition:    background 0.15s;
+  white-space:   nowrap;
+}
+
+.addBtn:hover { background: #f59e0b33; }
+
+/* ── Rule list ────────────────────────────────────────────────────────────── */
+
+.rulesPane,
+.historyPane {
+  flex:        1;
+  overflow:    hidden;
+  display:     flex;
+  flex-direction: column;
+}
+
+.list {
+  flex:        1;
+  overflow-y:  auto;
+  padding:     6px;
+  display:     flex;
+  flex-direction: column;
+  gap:         4px;
+}
+
+.empty {
+  color:      #3d4060;
+  font-family: "JetBrains Mono", monospace;
+  font-size:  11px;
+  text-align: center;
+  margin-top: 24px;
+}
+
+.ruleCard {
+  display:       flex;
+  align-items:   center;
+  background:    #101118;
+  border:        1px solid #1e2030;
+  border-radius: 4px;
+  padding:       8px 10px;
+  gap:           8px;
+  transition:    border-color 0.15s, opacity 0.15s;
+}
+
+.ruleCard:hover    { border-color: #2a2d45; }
+.ruleInactive      { opacity: 0.45; }
+
+.ruleMain {
+  display:     flex;
+  align-items: center;
+  gap:         8px;
+  flex:        1;
+  min-width:   0;
+}
+
+.ruleSym {
+  font-family:  "JetBrains Mono", monospace;
+  font-size:    12px;
+  font-weight:  700;
+  color:        #e8eaf0;
+}
+
+.ruleCond {
+  font-family: "JetBrains Mono", monospace;
+  font-size:   10px;
+  color:       #6b7280;
+}
+
+.ruleThr {
+  font-family: "JetBrains Mono", monospace;
+  font-size:   12px;
+  font-weight: 600;
+  color:       #f59e0b;
+}
+
+.recurringBadge {
+  font-size:    10px;
+  font-weight:  700;
+  color:        #8b5cf6;
+  background:   #8b5cf615;
+  padding:      1px 5px;
+  border-radius: 3px;
+}
+
+.ruleActions {
+  display: flex;
+  gap:     4px;
+}
+
+.iconBtn {
+  background:    transparent;
+  border:        1px solid #1e2030;
+  border-radius: 3px;
+  color:         #3d4060;
+  cursor:        pointer;
+  padding:       4px;
+  display:       flex;
+  align-items:   center;
+  transition:    all 0.15s;
+}
+
+.iconBtnActive    { color: #10b981; border-color: #10b98133; }
+.iconBtnActive:hover { background: #10b98115; }
+
+.iconBtnDelete:hover {
+  color:        #ef4444;
+  border-color: #ef444433;
+  background:   #ef444415;
+}
+
+/* ── History ──────────────────────────────────────────────────────────────── */
+
+.historyHeader {
+  display:        flex;
+  align-items:    center;
+  justify-content: space-between;
+  padding:        8px 10px;
+  border-bottom:  1px solid #1e2030;
+  flex-shrink:    0;
+}
+
+.historyCount {
+  font-family: "JetBrains Mono", monospace;
+  font-size:   10px;
+  color:       #6b7280;
+}
+
+.clearBtn {
+  background:    transparent;
+  border:        1px solid #3d4060;
+  border-radius: 3px;
+  color:         #6b7280;
+  font-family:   "JetBrains Mono", monospace;
+  font-size:     9px;
+  padding:       2px 8px;
+  cursor:        pointer;
+  transition:    all 0.15s;
+}
+
+.clearBtn:hover { color: #ef4444; border-color: #ef444444; }
+
+.historyCard {
+  background:    #101118;
+  border:        1px solid #1e2030;
+  border-left:   3px solid #f59e0b;
+  border-radius: 0 4px 4px 0;
+  padding:       8px 10px;
+  flex-shrink:   0;
+}
+
+.historyTop {
+  display:     flex;
+  align-items: center;
+  gap:         8px;
+  margin-bottom: 4px;
+}
+
+.historySymbol {
+  font-family:  "JetBrains Mono", monospace;
+  font-size:    11px;
+  font-weight:  700;
+  color:        #e8eaf0;
+}
+
+.historyPrice {
+  font-family:  "JetBrains Mono", monospace;
+  font-size:    11px;
+  color:        #f59e0b;
+}
+
+.historyTs {
+  font-family: "JetBrains Mono", monospace;
+  font-size:   9px;
+  color:       #3d4060;
+  margin-left: auto;
+}
+
+.historyMsg {
+  font-size:   10px;
+  color:       #6b7280;
+  margin:      0;
+  font-family: "JetBrains Mono", monospace;
+}

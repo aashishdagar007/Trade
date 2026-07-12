@@ -1,0 +1,99 @@
+/* OrderBookPanel.module.css */
+
+.root {
+  display:        flex;
+  flex-direction: column;
+  height:         100%;
+  background:     #0d0e14;
+  overflow:       hidden;
+}
+
+.loading {
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  height:          100%;
+  color:           #3d4060;
+  font-family:     "JetBrains Mono", monospace;
+  font-size:       12px;
+}
+
+.unavailable {
+  display:         flex;
+  flex-direction:  column;
+  align-items:     center;
+  justify-content: center;
+  height:          100%;
+  padding:         24px;
+  text-align:      center;
+  gap:             8px;
+}
+
+.unavailableIcon  { font-size: 28px; }
+.unavailableTitle { color: #e8eaf0; font-size: 13px; font-weight: 600; margin: 0; }
+.unavailableMsg   { color: #6b7280; font-size: 11px; line-height: 1.6; margin: 0; }
+.fallback         { color: #9ca3c0; font-size: 12px; margin-top: 8px; }
+.fallback strong  { color: #e8eaf0; }
+
+.table {
+  width:           100%;
+  border-collapse: collapse;
+  font-family:     "JetBrains Mono", monospace;
+  font-size:       11px;
+}
+
+.table th {
+  padding:       4px 8px;
+  color:         #3d4060;
+  font-size:     9px;
+  font-weight:   600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  text-align:    left;
+}
+
+.right { text-align: right; }
+
+.levelRow td { padding: 3px 8px; }
+.levelRow:hover { background: #12131c; }
+
+.barCell {
+  position:  relative;
+  min-width: 80px;
+}
+
+.bar {
+  position: absolute;
+  top: 0; bottom: 0; right: 0;
+  opacity: 0.15;
+}
+
+.bidBar { background: #10b981; }
+.askBar { background: #ef4444; }
+
+.levelPrice { position: relative; z-index: 1; font-weight: 600; }
+.bidPrice   { color: #10b981; }
+.askPrice   { color: #ef4444; }
+
+.midRow {
+  display:        flex;
+  align-items:    center;
+  justify-content: space-between;
+  padding:        6px 8px;
+  background:     #101118;
+  border-top:     1px solid #1e2030;
+  border-bottom:  1px solid #1e2030;
+}
+
+.mid {
+  font-family:  "JetBrains Mono", monospace;
+  font-size:    14px;
+  font-weight:  700;
+  color:        #e8eaf0;
+}
+
+.spread {
+  font-family: "JetBrains Mono", monospace;
+  font-size:   10px;
+  color:       #6b7280;
+}

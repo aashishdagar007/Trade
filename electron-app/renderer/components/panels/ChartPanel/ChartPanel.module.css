@@ -1,0 +1,97 @@
+/* ChartPanel.module.css */
+
+.root {
+  display:        flex;
+  flex-direction: column;
+  height:         100%;
+  background:     #0d0e14;
+}
+
+.toolbar {
+  display:      flex;
+  align-items:  center;
+  gap:          12px;
+  padding:      6px 12px;
+  border-bottom: 1px solid #1e2030;
+  flex-shrink:  0;
+  flex-wrap:    wrap;
+}
+
+.symbolLabel {
+  font-family:  "JetBrains Mono", monospace;
+  font-size:    13px;
+  font-weight:  700;
+  color:        #e8eaf0;
+}
+
+.price {
+  font-family:  "JetBrains Mono", monospace;
+  font-size:    15px;
+  font-weight:  700;
+  color:        #ffffff;
+}
+
+.change {
+  font-family:  "JetBrains Mono", monospace;
+  font-size:    12px;
+  font-weight:  600;
+  padding:      2px 6px;
+  border-radius: 3px;
+}
+
+.pos { color: #10b981; background: #10b98115; }
+.neg { color: #ef4444; background: #ef444415; }
+
+.spread {
+  font-family: "JetBrains Mono", monospace;
+  font-size:   11px;
+  color:       #6b7280;
+  margin-left: auto;
+}
+
+.intervals {
+  display:  flex;
+  gap:      2px;
+  margin-left: auto;
+}
+
+.ivBtn {
+  background:   transparent;
+  border:       1px solid #1e2030;
+  color:        #6b7280;
+  font-family:  "JetBrains Mono", monospace;
+  font-size:    10px;
+  padding:      3px 8px;
+  border-radius: 3px;
+  cursor:       pointer;
+  transition:   all 0.15s;
+}
+
+.ivBtn:hover { border-color: #f59e0b44; color: #f59e0b; }
+
+.ivActive {
+  background:  #f59e0b22;
+  border-color: #f59e0b;
+  color:        #f59e0b;
+}
+
+.chartWrap {
+  flex:     1;
+  position: relative;
+  overflow: hidden;
+}
+
+.overlay, .overlayErr {
+  position:   absolute;
+  inset:      0;
+  display:    flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "JetBrains Mono", monospace;
+  font-size:  13px;
+  color:      #6b7280;
+  background: #0d0e14cc;
+  z-index:    5;
+}
+
+.overlayErr { color: #ef4444; }

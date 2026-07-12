@@ -1,0 +1,94 @@
+/* electron-app/renderer/components/CommandBar/CommandBar.module.css */
+
+.wrapper {
+  position:     relative;
+  display:      flex;
+  align-items:  center;
+  gap:          8px;
+  padding:      6px 12px;
+  background:   #0d0e14;
+  border-bottom: 1px solid #1e2030;
+  z-index:      100;
+}
+
+.indicator {
+  width:            8px;
+  height:           8px;
+  border-radius:    50%;
+  background:       #f59e0b;
+  box-shadow:       0 0 6px #f59e0b88;
+  flex-shrink:      0;
+  animation:        pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+.input {
+  flex:             1;
+  background:       transparent;
+  border:           none;
+  outline:          none;
+  color:            #e8eaf0;
+  font-family:      "JetBrains Mono", "Fira Code", monospace;
+  font-size:        13px;
+  letter-spacing:   0.03em;
+  caret-color:      #f59e0b;
+}
+
+.input::placeholder {
+  color: #3d4060;
+}
+
+.input:focus {
+  color: #ffffff;
+}
+
+.goBtn {
+  padding:          4px 14px;
+  background:       #f59e0b;
+  color:            #0a0b0f;
+  border:           none;
+  border-radius:    3px;
+  font-family:      inherit;
+  font-size:        11px;
+  font-weight:      700;
+  letter-spacing:   0.08em;
+  cursor:           pointer;
+  transition:       background 0.15s, transform 0.08s;
+}
+
+.goBtn:hover    { background: #fbbf24; }
+.goBtn:active   { transform: scale(0.95); }
+
+.suggestions {
+  position:         absolute;
+  top:              100%;
+  left:             28px;
+  right:            80px;
+  background:       #12131c;
+  border:           1px solid #2a2d45;
+  border-top:       none;
+  border-radius:    0 0 6px 6px;
+  list-style:       none;
+  margin:           0;
+  padding:          4px 0;
+  z-index:          200;
+  box-shadow:       0 8px 24px #00000088;
+}
+
+.suggestion {
+  padding:          8px 16px;
+  font-family:      "JetBrains Mono", monospace;
+  font-size:        12px;
+  color:            #9ca3c0;
+  cursor:           pointer;
+  transition:       background 0.1s, color 0.1s;
+}
+
+.suggestion:hover {
+  background: #1e2030;
+  color:      #f59e0b;
+}
