@@ -1,0 +1,13 @@
+# Python
+backend/venv/
+backend/__pycache__/
+backend/**/__pycache__/
+*.pyc
+
+# Node
+electron-app/node_modules/
+electron-app/renderer/dist/
+electron-app/dist/
+
+# OS
+.DS_Store

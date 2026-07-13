@@ -1,0 +1,89 @@
+:root {
+  --bg: #0a0a0a;
+  --panel-bg: #111418;
+  --border: #262b33;
+  --text: #d7dde3;
+  --accent: #ff8c00; /* BBG's signature amber */
+  --mono: 'JetBrains Mono', 'IBM Plex Mono', monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 13px;
+}
+
+.terminal {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.command-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #000;
+  border-bottom: 2px solid var(--accent);
+}
+
+.command-bar__prompt {
+  color: var(--accent);
+  font-weight: bold;
+}
+
+.command-bar__input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 14px;
+}
+
+.command-bar__input::placeholder {
+  color: #555;
+}
+
+.panel-grid {
+  flex: 1;
+  overflow: auto;
+  padding: 8px;
+}
+
+.panel {
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.panel__header {
+  padding: 4px 8px;
+  background: #1a1e24;
+  border-bottom: 1px solid var(--border);
+  color: var(--accent);
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  cursor: move;
+}
+
+.panel__body {
+  flex: 1;
+  padding: 8px;
+  overflow: auto;
+}
+
+.panel-placeholder {
+  color: #555;
+  font-size: 12px;
+}

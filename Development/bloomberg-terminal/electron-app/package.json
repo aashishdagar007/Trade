@@ -1,0 +1,28 @@
+{
+  "name": "bloomberg-terminal-electron",
+  "version": "0.1.0",
+  "private": true,
+  "main": "main/main.js",
+  "scripts": {
+    "dev:renderer": "vite",
+    "dev:electron": "wait-on http://localhost:5173 && electron .",
+    "dev": "concurrently \"npm:dev:renderer\" \"npm:dev:electron\"",
+    "build:renderer": "vite build",
+    "build": "npm run build:renderer && electron-builder"
+  },
+  "dependencies": {
+    "lightweight-charts": "^5.2.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-grid-layout": "^1.4.4",
+    "react-resizable": "^3.0.5"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "concurrently": "^9.0.1",
+    "electron": "^32.1.2",
+    "electron-builder": "^25.1.7",
+    "vite": "^5.4.8",
+    "wait-on": "^8.0.1"
+  }
+}
