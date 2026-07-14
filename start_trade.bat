@@ -63,7 +63,7 @@ if not exist "%VENV_DIR%\Lib\site-packages\fastapi" (
 :: =============================================================================
 echo.
 echo [2/4] Checking Frontend environment...
-set "FRONTEND_DIR=%PROJECT_DIR%\frontend"
+set "FRONTEND_DIR=%PROJECT_DIR%"
 set "PACKAGE_JSON=%FRONTEND_DIR%\package.json"
 set "NODE_MODULES=%FRONTEND_DIR%\node_modules"
 
@@ -92,7 +92,7 @@ cd /d "%BACKEND_DIR%"
 start "TradePro Backend" cmd /k "
     call "%VENV_ACTIVATE%"
     echo Backend server starting...
-    uvicorn main:app --reload --port 8000
+    uvicorn ws_server:app --reload --port 8000
 "
 
 :: Wait for backend to be ready (polling health endpoint)

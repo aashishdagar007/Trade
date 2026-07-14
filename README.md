@@ -65,7 +65,7 @@ copy .env.example .env   # Windows
 
 3. **Frontend Setup**:
 ```bash
-cd ../frontend
+# In the root project directory
 npm install
 ```
 
@@ -75,12 +75,12 @@ npm install
 ```bash
 cd backend
 # Ensure virtual environment is activated
-uvicorn main:app --reload --port 8000
+uvicorn ws_server:app --reload --port 8000
 ```
 
 2. **Start the frontend development server**:
 ```bash
-cd frontend
+# In the root project directory
 npm run dev
 ```
 

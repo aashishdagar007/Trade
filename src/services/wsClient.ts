@@ -30,6 +30,9 @@ export interface CanonicalTick {
   spread:      number | null;
   spread_bps:  number | null;
   seq:         number;
+  // Top-of-book depth ladder, best price first. null for equities (no L2 source).
+  bids:        [number, number][] | null;
+  asks:        [number, number][] | null;
 }
 
 export type TickHandler = (tick: CanonicalTick) => void;

@@ -31,6 +31,28 @@ interface Bar {
   ts: number; open: number; high: number; low: number; close: number; volume: number;
 }
 
+// Seconds per bar for each interval -- used to figure out which bar a raw
+// tick timestamp belongs to.
+const INTERVAL_SECONDS: Record<Interval, number> = {
+  "1m": 60, "5m": 300, "15m": 900, "1h": 3600, "1d": 86400,
+};
+
+function bucketStart(tsMs: number, interval: Interval): number {
+  const secs   = Math.floor(tsMs / 1000);
+  const bucket = INTERVAL_SECONDS[interval];
+  return secs - (secs % bucket);
+}
+
+// The bar currently being built from live ticks. Built from tick.price only
+// -- never from tick.open/high/low, which are the exchange's 24-HOUR
+// rolling stats (see providers/base.py's Tick docstring), not this bar's
+// stats. Using those directly was the original bug: every live update
+// painted a candle spanning the full 24h range at the tick's raw timestamp
+// instead of extending the current interval's bar.
+interface LiveBar {
+  time: number; open: number; high: number; low: number; close: number; volume: number;
+}
+
 interface ChartPanelProps {
   symbol: string;
 }
@@ -45,6 +67,11 @@ export const ChartPanel: React.FC<ChartPanelProps> = ({ symbol }) => {
   const [lastTick,   setLastTick]   = useState<CanonicalTick | null>(null);
   const [loading,    setLoading]    = useState(true);
   const [error,      setError]      = useState<string | null>(null);
+
+  // The bar currently being built from live ticks -- seeded from the last
+  // historical bar on load, replaced wholesale whenever symbol/interval
+  // changes (see fetchHistory below).
+  const currentBarRef = useRef<LiveBar | null>(null);
 
   // ── Chart init ────────────────────────────────────────────────────────────
   useLayoutEffect(() => {
@@ -128,6 +155,22 @@ export const ChartPanel: React.FC<ChartPanelProps> = ({ symbol }) => {
       candleRef.current.setData(candles);
       volumeRef.current.setData(volumes);
       chartRef.current?.timeScale().fitContent();
+
+      // Seed the live bar from the last historical bar so the first live
+      // tick continues it rather than starting a fresh empty bar. Only
+      // seed if that bar's bucket is still the *current* bucket -- if
+      // history's last bar is from a bucket that's already closed, start
+      // fresh instead of resurrecting a stale one.
+      const lastBar = bars[bars.length - 1];
+      if (lastBar) {
+        const nowBucket  = bucketStart(Date.now(), interval);
+        const lastBucket = bucketStart(lastBar.ts, interval);
+        currentBarRef.current = lastBucket === nowBucket
+          ? { time: lastBucket, open: lastBar.open, high: lastBar.high, low: lastBar.low, close: lastBar.close, volume: lastBar.volume }
+          : null; // next live tick will start a brand new bar for the current bucket
+      } else {
+        currentBarRef.current = null;
+      }
     } catch (e: unknown) {
       setError("Failed to load history");
     } finally {
@@ -141,21 +184,50 @@ export const ChartPanel: React.FC<ChartPanelProps> = ({ symbol }) => {
   useEffect(() => {
     const unsub = wsClient.subscribe(symbol, (tick) => {
       setLastTick(tick);
-      if (!candleRef.current) return;
-      // Update the last visible candle with the current price
-      const tsSeconds = Math.floor(tick.ts / 1000) as UTCTimestamp;
+      if (!candleRef.current || !volumeRef.current) return;
+
+      const bucket  = bucketStart(tick.ts, interval);
+      const current = currentBarRef.current;
+
+      let bar: LiveBar;
+      if (!current || bucket > current.time) {
+        // New bar: either the first live tick ever, or the interval
+        // boundary has passed. Open at this tick's price -- there's no
+        // better anchor available client-side without waiting for the
+        // next history refetch.
+        bar = { time: bucket, open: tick.price, high: tick.price, low: tick.price, close: tick.price, volume: tick.volume ?? 0 };
+      } else if (bucket === current.time) {
+        // Same bar as before: extend high/low, move close, accumulate volume.
+        bar = {
+          time:  current.time,
+          open:  current.open,
+          high:  Math.max(current.high, tick.price),
+          low:   Math.min(current.low, tick.price),
+          close: tick.price,
+          volume: current.volume + (tick.volume ?? 0),
+        };
+      } else {
+        // bucket < current.time -- an out-of-order/late tick for a bar
+        // that's already closed. Don't rewrite history from a stray tick.
+        return;
+      }
+
+      currentBarRef.current = bar;
+
       try {
         candleRef.current.update({
-          time:  tsSeconds,
-          open:  tick.open  ?? tick.price,
-          high:  tick.high  ?? tick.price,
-          low:   tick.low   ?? tick.price,
-          close: tick.price,
+          time:  bar.time as UTCTimestamp,
+          open:  bar.open, high: bar.high, low: bar.low, close: bar.close,
         });
-      } catch { /* out-of-order tick — ignore */ }
+        volumeRef.current.update({
+          time:  bar.time as UTCTimestamp,
+          value: bar.volume,
+          color: bar.close >= bar.open ? "#10b98133" : "#ef444433",
+        });
+      } catch { /* lightweight-charts rejected it -- ignore and wait for the next tick */ }
     });
     return unsub;
-  }, [symbol]);
+  }, [symbol, interval]);
 
   // ── Render ────────────────────────────────────────────────────────────────
   const changePct   = lastTick?.change_pct;

@@ -31,12 +31,11 @@ interface PanelShellProps {
   panelId:         PanelId;
   symbol:          string | null;
   onClose:         () => void;
-  onDetach:        () => void;
   onSymbolChange:  (symbol: string) => void;
 }
 
 export const PanelShell: React.FC<PanelShellProps> = ({
-  panelId, symbol, onClose, onDetach, onSymbolChange,
+  panelId, symbol, onClose, onSymbolChange,
 }) => {
   return (
     <div className={styles.shell} data-panel-id={panelId}>
@@ -48,14 +47,6 @@ export const PanelShell: React.FC<PanelShellProps> = ({
           <span className={styles.symbolBadge}>{symbol}</span>
         )}
         <div className={styles.actions}>
-          <button
-            className={styles.actionBtn}
-            onClick={onDetach}
-            title="Detach to new window"
-            aria-label="Detach panel"
-          >
-            <ExternalLink size={12} />
-          </button>
           <button
             className={styles.actionBtn}
             onClick={onClose}

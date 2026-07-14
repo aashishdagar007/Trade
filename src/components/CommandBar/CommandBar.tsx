@@ -25,23 +25,23 @@ export const CommandBar: React.FC<CommandBarProps> = ({ onCommand }) => {
   const [showSug,     setShowSug]     = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // ── IPC shortcut listener ─────────────────────────────────────────────────
+  // ── Browser shortcut listener ──────────────────────────────────────────────
   useEffect(() => {
-    if (!window.electronAPI) return;
-    const unsub = window.electronAPI.onShortcut(({ key }) => {
-      if (key === "command-bar" || key === "escape") {
-        if (key === "escape") {
-          setValue("");
-          setSuggestions([]);
-          setShowSug(false);
-          inputRef.current?.blur();
-        } else {
-          inputRef.current?.focus();
-          inputRef.current?.select();
-        }
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      // Ctrl+G or F2-F7 etc (using Ctrl+G as example here)
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "g") {
+        e.preventDefault();
+        inputRef.current?.focus();
+        inputRef.current?.select();
+      } else if (e.key === "Escape") {
+        setValue("");
+        setSuggestions([]);
+        setShowSug(false);
+        inputRef.current?.blur();
       }
-    });
-    return unsub;
+    };
+    window.addEventListener("keydown", handleGlobalKeyDown);
+    return () => window.removeEventListener("keydown", handleGlobalKeyDown);
   }, []);
 
   // ── Input handlers ─────────────────────────────────────────────────────────

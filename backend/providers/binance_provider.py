@@ -93,6 +93,13 @@ class BinanceProvider(BaseProvider):
                             "bids": [[float(b[0]), float(b[1])] for b in data["b"][:5]],
                             "asks": [[float(a[0]), float(a[1])] for a in data["a"][:5]],
                         }
+                        # Depth changes far more often than the 24hr ticker
+                        # updates -- push it through immediately so the
+                        # order book panel is actually live, not just
+                        # refreshed whenever a ticker event happens to fire.
+                        if sym in self._ticker_cache:
+                            tick = self._build_tick(sym)
+                            await callback(tick)
 
                 except asyncio.CancelledError:
                     raise
@@ -184,8 +191,10 @@ class BinanceProvider(BaseProvider):
         t  = self._ticker_cache.get(symbol, {})
         ob = self._order_book_cache.get(symbol, {})
 
-        best_bid = ob["bids"][0][0] if ob.get("bids") else None
-        best_ask = ob["asks"][0][0] if ob.get("asks") else None
+        bids = ob.get("bids") or []
+        asks = ob.get("asks") or []
+        best_bid = bids[0][0] if bids else None
+        best_ask = asks[0][0] if asks else None
 
         open_price = t.get("open")
         price      = t.get("price", 0.0)
@@ -199,10 +208,16 @@ class BinanceProvider(BaseProvider):
             volume      = t.get("volume"),
             bid         = best_bid,
             ask         = best_ask,
+            # NOTE: open/high/low here are the *24-hour* rolling stats from
+            # Binance's miniTicker stream, not the current chart bar's OHLC.
+            # Don't use these to build candlesticks client-side -- see
+            # ChartPanel.tsx's own local bar-bucketing logic instead.
             open        = open_price,
             high        = t.get("high"),
             low         = t.get("low"),
             change_pct  = change_pct,
+            bids        = bids or None,
+            asks        = asks or None,
         )
 
     def _rate_limit(self) -> None:
@@ -214,7 +229,7 @@ class BinanceProvider(BaseProvider):
         self._last_request_ms = time.time() * 1000
 
     async def _prefetch_exchange_info(self) -> None:
-        info = await self.client.exchange_info()
+        info = await self.client.get_exchange_info()
         self._symbol_info = {s["symbol"]: s for s in info["symbols"]}
 
     def _format_quantity(self, symbol: str, quantity: float) -> str:

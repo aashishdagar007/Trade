@@ -127,8 +127,16 @@ export const AlertsPanel: React.FC = () => {
             if (evaluateRule(rule, tick)) {
               const message = makeMessage(rule, tick.price);
 
-              // Fire OS notification
-              window.electronAPI?.triggerAlert({ symbol: rule.symbol, message });
+              // Fire OS notification via browser API
+              if (Notification.permission === "granted") {
+                new Notification(rule.symbol, { body: message });
+              } else if (Notification.permission !== "denied") {
+                Notification.requestPermission().then((permission) => {
+                  if (permission === "granted") {
+                    new Notification(rule.symbol, { body: message });
+                  }
+                });
+              }
 
               // Record in history
               fired.push({

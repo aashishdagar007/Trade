@@ -60,14 +60,18 @@ export const OrderBookPanel: React.FC<OrderBookPanelProps> = ({ symbol }) => {
     return <div className={styles.loading}>Waiting for depth data…</div>;
   }
 
-  const mid   = (tick.bid + tick.ask) / 2;
+  if (!tick.bids || !tick.asks || tick.bids.length === 0 || tick.asks.length === 0) {
+    return <div className={styles.loading}>Waiting for depth data…</div>;
+  }
+
+  const mid    = (tick.bid + tick.ask) / 2;
   const spread = tick.ask - tick.bid;
 
-  // Synthesise a simple 5-level ladder from best bid/ask + price
-  // Real depth ladder requires the full bids/asks arrays from BinanceProvider
-  // which are available in the tick.data_extra field (future enhancement).
-  const bids: Level[] = buildLevels(tick.bid, "bid", 5);
-  const asks: Level[] = buildLevels(tick.ask, "ask", 5);
+  // Real depth levels straight from Binance's depth stream (see
+  // BinanceProvider._build_tick on the backend) -- best price first in
+  // both arrays, as sent by the exchange.
+  const bids: Level[] = levelsFromDepth(tick.bids);
+  const asks: Level[] = levelsFromDepth(tick.asks);
 
   return (
     <div className={styles.root} data-panel-id="orderbook">
@@ -107,25 +111,14 @@ export const OrderBookPanel: React.FC<OrderBookPanelProps> = ({ symbol }) => {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-function buildLevels(
-  bestPrice: number,
-  side: "bid" | "ask",
-  count: number
-): Level[] {
-  // Simulate a 5-level ladder from the best price.
-  // Replace with real depth array from BinanceProvider when wired.
-  const tickSize = bestPrice * 0.0001;
-  const levels: Level[] = [];
+function levelsFromDepth(depth: [number, number][]): Level[] {
+  // depth is [[price, size], ...], best price first, straight from Binance.
   let total = 0;
-  for (let i = 0; i < count; i++) {
-    const price = side === "bid"
-      ? bestPrice - i * tickSize
-      : bestPrice + i * tickSize;
-    const size = Math.random() * 5 + 0.1;   // placeholder — replace with real depth
+  const levels: Level[] = depth.map(([price, size]) => {
     total += size;
-    levels.push({ price, size, total, pct: 0 });
-  }
-  const maxTotal = levels[levels.length - 1].total;
+    return { price, size, total, pct: 0 };
+  });
+  const maxTotal = levels[levels.length - 1]?.total || 1;
   return levels.map((l) => ({ ...l, pct: (l.total / maxTotal) * 100 }));
 }
 

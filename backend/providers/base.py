@@ -50,6 +50,10 @@ class Tick:
     high:        Optional[float] = None
     low:         Optional[float] = None
     change_pct:  Optional[float] = None
+    # Top-of-book depth ladder: list of [price, size] pairs, best price first.
+    # None for equities on the free tier (no L2 data source wired up).
+    bids:        Optional[list[list[float]]] = None
+    asks:        Optional[list[list[float]]] = None
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)

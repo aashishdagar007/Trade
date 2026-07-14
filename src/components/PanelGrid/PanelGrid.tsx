@@ -113,12 +113,6 @@ export const PanelGrid: React.FC<PanelGridProps> = ({ activeCommand }) => {
     );
   }, []);
 
-  const handleDetach = useCallback((panelId: PanelId) => {
-    const url = `${window.location.origin}?panel=${panelId}`;
-    window.open(url, `_blank`, "width=800,height=600,menubar=no,toolbar=no");
-    window.electronAPI?.notifyPanelDetached(panelId);
-  }, []);
-
   const visiblePanels = panels.filter((p) => p.visible);
 
   return (
@@ -140,7 +134,6 @@ export const PanelGrid: React.FC<PanelGridProps> = ({ activeCommand }) => {
               panelId={panel.id}
               symbol={panel.symbol}
               onClose={() => handleClose(panel.id)}
-              onDetach={() => handleDetach(panel.id)}
               onSymbolChange={(s) => handleSymbolChange(panel.id, s)}
             />
           </div>
